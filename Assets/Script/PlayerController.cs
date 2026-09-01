@@ -14,6 +14,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         weaponManager = GetComponent<WeaponManager>();
+
+        // 1. 마우스 커서 항상 보이게 설정
+        Cursor.visible = true;
+
+        // 2. 마우스 커서를 게임 창 화면 안으로 제한 (선택 사항)
+        Cursor.lockState = CursorLockMode.None;
     }
 
     void Update()
@@ -53,5 +59,8 @@ public class PlayerController : MonoBehaviour
         Vector2 lookDir = mousePos - rb.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
         weaponHolder.rotation = Quaternion.Euler(0, 0, angle);
+
+        // 벽 통과 방지를 위해 Rigidbody2D를 이용한 물리 이동 사용
+        rb.MovePosition(rb.position + moveInput.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 }
