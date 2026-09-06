@@ -59,8 +59,5 @@ public class PlayerController : MonoBehaviour
         Vector2 lookDir = mousePos - rb.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg;
         weaponHolder.rotation = Quaternion.Euler(0, 0, angle);
-
-        // 벽 통과 방지를 위해 Rigidbody2D를 이용한 물리 이동 사용
-        rb.MovePosition(rb.position + moveInput.normalized * moveSpeed * Time.fixedDeltaTime);
     }
 }

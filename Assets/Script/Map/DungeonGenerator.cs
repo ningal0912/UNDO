@@ -76,6 +76,11 @@ public class DungeonGenerator : MonoBehaviour
                 playerRb.linearVelocity = Vector2.zero; // Unity 2023+ (구버전은 velocity)
             }
         }
+        Vector2Int startPos = Vector2Int.zero;
+        if (dungeonGrid.ContainsKey(startPos))
+        {
+            OnRoomCleared(dungeonGrid[startPos]);
+        }
     }
 
     void SpawnRoomObject(GameObject prefab, Vector2Int gridPos)

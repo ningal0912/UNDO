@@ -2629,7 +2629,9 @@ MonoBehaviour:
   totalEnemies: 0
   killedEnemies: 0
   isCleared: 0
-  activeMonsters: []
+  activeMonsters:
+  - {fileID: 5087841104034274979, guid: 363210df4594af149ac59e251862d466, type: 3}
+  - {fileID: 6401269353696291025, guid: 2090363064fea534d8432476ad0e9252, type: 3}
 --- !u!1 &5806619174912247495
 GameObject:
   m_ObjectHideFlags: 0
