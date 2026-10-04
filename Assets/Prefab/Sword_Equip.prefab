@@ -47,14 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SwordWeapon
   weaponName: 
   rarity: 0
-  baseDamage: 10
+  baseDamage: 25
   attackCooldown: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
   droppedPrefab: {fileID: 2350737346831466446, guid: 7a5aed7d3ab0f77428583fc5d40f69ca, type: 3}
   rangeLine: {fileID: -8734560404760185582}
-  attackRange: 2
+  attackRange: 3
   attackAngle: 120
   swordWavePrefab: {fileID: 0}
 --- !u!120 &-8734560404760185582

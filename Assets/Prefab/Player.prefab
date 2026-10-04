@@ -11,10 +11,11 @@ GameObject:
   - component: {fileID: 5107722533528408824}
   - component: {fileID: 2842520046159835201}
   - component: {fileID: 2759183146413191056}
-  - component: {fileID: 4806524486629805602}
+  - component: {fileID: 7702202760278771002}
   - component: {fileID: 523165116911491057}
   - component: {fileID: 833665301350850850}
   - component: {fileID: 2772490870284884960}
+  - component: {fileID: 7129132983647082006}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -84,7 +85,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1679151799
-  m_SortingLayer: 4
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
@@ -125,8 +126,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!61 &4806524486629805602
-BoxCollider2D:
+--- !u!58 &7702202760278771002
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -160,17 +161,7 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Radius: 0.5
 --- !u!114 &523165116911491057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,9 +205,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d21ffebbadc8ed46bad6baca6471d01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityHealth
+  maxHp: 100
+  currentHp: 0
+--- !u!114 &7129132983647082006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3072434710714141623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a2d34db6fa7bfc458286ba483657e3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   currentHealth: 0
-  isPlayer: 1
 --- !u!1 &6880662546020803549
 GameObject:
   m_ObjectHideFlags: 0

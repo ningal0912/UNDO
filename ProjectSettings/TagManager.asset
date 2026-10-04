@@ -15,7 +15,7 @@ TagManager:
   - UI
   - Enemy
   - Projectile
-  - 
+  - Wall
   - 
   - 
   - 
@@ -40,23 +40,23 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Default
-    uniqueID: 0
-    locked: 0
   - name: Ground
     uniqueID: 4269507641
     locked: 0
+  - name: Foreground
+    uniqueID: 2747734299
+    locked: 0
   - name: Wall
     uniqueID: 2297493899
+    locked: 0
+  - name: Default
+    uniqueID: 0
     locked: 0
   - name: Default
     uniqueID: 2391154289
     locked: 0
   - name: Entities
     uniqueID: 1679151799
-    locked: 0
-  - name: Foreground
-    uniqueID: 2747734299
     locked: 0
   m_RenderingLayers:
   - Default

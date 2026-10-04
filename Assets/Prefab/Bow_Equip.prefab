@@ -29,7 +29,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1095913925731880152}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5716332474491838080
@@ -46,12 +47,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BowWeapon
   weaponName: 
   rarity: 0
-  baseDamage: 10
-  attackCooldown: 0.5
+  baseDamage: 20
+  attackCooldown: 0.3
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  droppedPrefab: {fileID: 0}
-  arrowPrefab: {fileID: 0}
-  firePoint: {fileID: 0}
+  droppedPrefab: {fileID: 310136472582268141, guid: dc2c41604d113b94fbeae3ba39072e7a, type: 3}
+  rangeLine: {fileID: 0}
+  arrowPrefab: {fileID: 477627789415807641, guid: 63aa5198ce506374589a980dfbaf0f9b, type: 3}
+  firePoint: {fileID: 1095913925731880152}
   maxDistance: 10
+--- !u!1 &7558256863889630208
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1095913925731880152}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1095913925731880152
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7558256863889630208}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8856174357079320847}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

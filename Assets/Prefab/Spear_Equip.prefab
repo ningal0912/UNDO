@@ -47,12 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpearWeapon
   weaponName: 
   rarity: 0
-  baseDamage: 10
-  attackCooldown: 0.5
+  baseDamage: 20
+  attackCooldown: 1
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  droppedPrefab: {fileID: 0}
+  droppedPrefab: {fileID: 8128975659088978541, guid: e8494e4ed7a8fdb4e9bf22d6a4c821ee, type: 3}
   rangeLine: {fileID: -8478396821592069127}
   innerRadius: 1
   outerRadius: 3

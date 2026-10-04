@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 326918349615624921}
   - component: {fileID: 6829735042575258961}
   - component: {fileID: 4462553747351237155}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2268,7 +2268,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1997473397
-  m_SortingLayer: 2
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -2449,7 +2449,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1508877502764615983}
   - component: {fileID: 3265360505028696598}
-  - component: {fileID: 3878464495840325900}
   m_Layer: 0
   m_Name: Grid 4
   m_TagString: Untagged
@@ -2488,39 +2487,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &3878464495840325900
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1712046675684487320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c922d2553658584e84ec298ff1f614b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RoomData
-  roomType: 3
-  spawnPoints:
-  - {fileID: 2981750647099156767}
-  - {fileID: 3253363397554205638}
-  - {fileID: 8834508425556716299}
-  - {fileID: 6023096445925275705}
-  - {fileID: 8116981099418981183}
-  - {fileID: 567745254880788511}
-  - {fileID: 476677609079489679}
-  - {fileID: 310803869903817020}
-  portalPoints:
-  - {fileID: 4596246100468448191}
-  - {fileID: 6267709354291742416}
-  - {fileID: 7802500666376753947}
-  - {fileID: 7827920458104156394}
-  totalEnemies: 0
-  killedEnemies: 0
-  isCleared: 0
-  activeMonsters:
-  - {fileID: 5087841104034274979, guid: 363210df4594af149ac59e251862d466, type: 3}
-  - {fileID: 6401269353696291025, guid: 2090363064fea534d8432476ad0e9252, type: 3}
 --- !u!1 &4203561816522817960
 GameObject:
   m_ObjectHideFlags: 0
@@ -2664,7 +2630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1719870667052296688
 Transform:
   m_ObjectHideFlags: 0
@@ -2976,6 +2942,7 @@ GameObject:
   - component: {fileID: 4034818373122606347}
   - component: {fileID: 5955472070650580691}
   - component: {fileID: 4301269545906421436}
+  - component: {fileID: 7317150893018781057}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -7374,7 +7341,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -25459655
-  m_SortingLayer: 1
+  m_SortingLayer: -3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -7422,6 +7389,35 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
+--- !u!114 &7317150893018781057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6799551210431986171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c922d2553658584e84ec298ff1f614b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomData
+  roomType: 2
+  isCleared: 0
+  portalPoints:
+  - {fileID: 4596246100468448191}
+  - {fileID: 6267709354291742416}
+  - {fileID: 7802500666376753947}
+  - {fileID: 7827920458104156394}
+  spawnPoints:
+  - {fileID: 2981750647099156767}
+  - {fileID: 3253363397554205638}
+  - {fileID: 8834508425556716299}
+  - {fileID: 6023096445925275705}
+  - {fileID: 8116981099418981183}
+  - {fileID: 567745254880788511}
+  - {fileID: 476677609079489679}
+  - {fileID: 310803869903817020}
+  weaponPrefabs: []
 --- !u!1 &7820435464727844442
 GameObject:
   m_ObjectHideFlags: 0

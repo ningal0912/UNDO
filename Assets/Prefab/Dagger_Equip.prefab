@@ -47,12 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DaggerWeapon
   weaponName: 
   rarity: 0
-  baseDamage: 10
-  attackCooldown: 0.5
+  baseDamage: 35
+  attackCooldown: 0.2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
-  droppedPrefab: {fileID: 0}
+  droppedPrefab: {fileID: 4616324255353142352, guid: 7804e3e9876c9ff46bb29f16635a9450, type: 3}
   rangeLine: {fileID: -5689385513900929223}
   attackRange: 1
   projectileLayer:
