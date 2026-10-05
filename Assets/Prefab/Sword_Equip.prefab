@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 680dcdbb4b0ef214d9663786ae5b221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwordWeapon
-  weaponName: 
+  weaponName: Sword
   rarity: 0
   baseDamage: 25
   attackCooldown: 0.5

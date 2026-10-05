@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dded8029f5dc88e45b2764f50006bed2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DaggerWeapon
-  weaponName: 
+  weaponName: Dagger
   rarity: 0
   baseDamage: 35
   attackCooldown: 0.2

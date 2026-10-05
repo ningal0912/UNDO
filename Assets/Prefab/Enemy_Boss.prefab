@@ -157,16 +157,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c71b4cce8d40cf48a2a9caa4096f5b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBoss
+  entityHealth: {fileID: 0}
+  rb: {fileID: 0}
+  player: {fileID: 0}
   projectilePrefab: {fileID: 477627789415807641, guid: 63aa5198ce506374589a980dfbaf0f9b, type: 3}
-  warningAOEPrefab: {fileID: 223624849044477972, guid: b28fd15eb2639244498c125e5f0cb4fa, type: 3}
   firePoint: {fileID: 2715957523708211775}
-  normalPatternInterval: 5
-  ragePatternInterval: 3
-  normalProjDamage: 15
-  normalAoeDamage: 25
-  rageProjDamage: 20
-  rageAoeDamage: 35
-  rageProjSpeedMultiplier: 1.4
+  warningAOEPrefab: {fileID: 223624849044477972, guid: b28fd15eb2639244498c125e5f0cb4fa, type: 3}
+  phase2HealthPercent: 0.3
+  phase1PatternInterval: 4
+  phase2PatternInterval: 2
+  phase1Pattern1BulletCount: 5
+  phase1Pattern1FireInterval: 0.3
+  phase1Pattern1BulletSpeed: 20
+  phase2Pattern1BulletCount: 7
+  phase2Pattern1FireInterval: 0.2
+  phase2Pattern1BulletSpeed: 25
+  phase1Pattern2BulletCount: 10
+  phase1Pattern2FireInterval: 0.25
+  phase1Pattern2BulletSpeed: 15
+  phase2Pattern2BulletCount: 15
+  phase2Pattern2FireInterval: 0.2
+  phase2Pattern2BulletSpeed: 20
+  pattern2TotalRotation: 90
+  pattern2RotationPerShot: 15
+  dashDistance: 10
+  dashDuration: 0.2
+  dashWarningTime: 0.8
+  dashBetweenDelay: 0.3
+  dashAOEDuration: 3
+  dashAOEWidth: 1.5
+  phase1AOEDamage: 25
+  phase2AOEDamage: 35
+  chargeScale: 0.85
+  dashScale: 1.15
+  facePlayer: 1
+  triangleRotationOffset: -90
 --- !u!114 &1362692838319846695
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -62,20 +62,29 @@ public class EntityHealth : MonoBehaviour, IDamageable
 
     private void Die()
     {
-        // 1. RoomData에 사망 알림 (방 클리어 체크)
         onDeath?.Invoke();
 
-        // 2. 플레이어인지 몬스터인지에 따른 처리
-        if (useInvincibility)
+    if (useInvincibility) // 플레이어인 경우[cite: 1]
         {
-            // 플레이어라면 게임 오버 또는 파괴 처리
+            if (GameOverPanelUI.Instance != null)
+            {
+                GameOverPanelUI.Instance.ShowEndPanel("YOU DIED");
+            }
             Destroy(gameObject);
-        }
-        else
+    }
+        else // 몬스터/보스인 경우[cite: 1]
         {
-            // 몬스터라면 오브젝트 풀링을 위해 파괴 대신 비활성화 후 반납
+            // 보스인 경우에만 승리 엔드 패널 호출
+            if (GetComponent<EnemyBoss>() != null)
+            {
+                if (GameOverPanelUI.Instance != null)
+                {
+                    GameOverPanelUI.Instance.ShowEndPanel("VICTORY!");
+                }
+            }
+
             gameObject.SetActive(false);
-        }
+    }
     }
 
     private IEnumerator InvincibilityRoutine()

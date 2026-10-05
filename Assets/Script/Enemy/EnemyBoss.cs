@@ -1,403 +1,1008 @@
 ﻿using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 public class EnemyBoss : MonoBehaviour
 {
-    [Header("보스 설정")]
+    // =========================================================
+    // 기본 설정
+    // =========================================================
+
+    [Header("========== 기본 설정 ==========")]
+
+    public EntityHealth entityHealth;
+    public Rigidbody2D rb;
+
+    [Header("플레이어")]
+    public Transform player;
+
+    [Header("탄환")]
     public GameObject projectilePrefab;
-    public GameObject warningAOEPrefab; // 장판 프리팹
     public Transform firePoint;
 
-    [Header("모드별 패턴 주기 및 스탯")]
-    public float normalPatternInterval = 5f; // 일반 모드 패턴 간격
-    public float ragePatternInterval = 3f;   // 분노 모드 패턴 간격
+    [Header("AOE")]
+    public GameObject warningAOEPrefab;
 
-    [Header("일반 모드 스탯")]
-    public float normalProjDamage = 15f;
-    public float normalAoeDamage = 25f;
 
-    [Header("분노 모드 (2페이즈, 체력 30% 이하) 스탯")]
-    public float rageProjDamage = 20f;
-    public float rageAoeDamage = 35f;
-    public float rageProjSpeedMultiplier = 1.4f; // 투사체 속도 빨라짐
+    // =========================================================
+    // 페이즈
+    // =========================================================
 
-    private Transform player;
-    private EntityHealth entityHealth;
-    private Rigidbody2D rb;
-    private bool isRageMode = false;
+    [Header("========== 페이즈 설정 ==========")]
 
-    void Start()
+    [Tooltip("이 체력 비율 이하가 되면 2페이즈")]
+    [Range(0f, 1f)]
+    public float phase2HealthPercent = 0.3f;
+
+    private bool isPhase2 = false;
+
+
+    // =========================================================
+    // 패턴 사이 간격
+    // =========================================================
+
+    [Header("========== 패턴 사이 간격 ==========")]
+
+    [Tooltip("1페이즈 패턴 사이 대기 시간")]
+    public float phase1PatternInterval = 5f;
+
+    [Tooltip("2페이즈 패턴 사이 대기 시간")]
+    public float phase2PatternInterval = 3f;
+
+
+    // =========================================================
+    // 패턴 1
+    // =========================================================
+
+    [Header("========== 패턴 1 : 플레이어 방향 연속 발사 ==========")]
+
+    [Header("1페이즈")]
+
+    [Tooltip("1페이즈 패턴1 총 발사 횟수")]
+    public int phase1Pattern1BulletCount = 5;
+
+    [Tooltip("1페이즈 패턴1 발사 간격")]
+    public float phase1Pattern1FireInterval = 0.5f;
+
+    [Tooltip("1페이즈 패턴1 탄환 속도")]
+    public float phase1Pattern1BulletSpeed = 15f;
+
+
+    [Header("2페이즈")]
+
+    [Tooltip("2페이즈 패턴1 총 발사 횟수")]
+    public int phase2Pattern1BulletCount = 7;
+
+    [Tooltip("2페이즈 패턴1 발사 간격")]
+    public float phase2Pattern1FireInterval = 0.3f;
+
+    [Tooltip("2페이즈 패턴1 탄환 속도")]
+    public float phase2Pattern1BulletSpeed = 20f;
+
+
+    // =========================================================
+    // 패턴 2
+    // =========================================================
+
+    [Header("========== 패턴 2 : 4방향 회전 발사 ==========")]
+
+    [Header("1페이즈")]
+
+    [Tooltip("1페이즈 패턴2 총 발사 횟수")]
+    public int phase1Pattern2BulletCount = 5;
+
+    [Tooltip("1페이즈 패턴2 발사 간격")]
+    public float phase1Pattern2FireInterval = 0.25f;
+
+    [Tooltip("1페이즈 패턴2 탄환 속도")]
+    public float phase1Pattern2BulletSpeed = 15f;
+
+
+    [Header("2페이즈")]
+
+    [Tooltip("2페이즈 패턴2 총 발사 횟수")]
+    public int phase2Pattern2BulletCount = 5;
+
+    [Tooltip("2페이즈 패턴2 발사 간격")]
+    public float phase2Pattern2FireInterval = 0.2f;
+
+    [Tooltip("2페이즈 패턴2 탄환 속도")]
+    public float phase2Pattern2BulletSpeed = 22f;
+
+
+    [Header("패턴 2 회전 설정")]
+
+    [Tooltip("시계 방향으로 회전할 총 각도")]
+    public float pattern2TotalRotation = 90f;
+
+    [Tooltip("한 번 발사할 때마다 회전하는 각도")]
+    public float pattern2RotationPerShot = 22.5f;
+
+
+    // =========================================================
+    // 패턴 3
+    // =========================================================
+
+    [Header("========== 패턴 3 : 대시 + AOE ==========")]
+
+    [Header("대시")]
+
+    [Tooltip("대시 거리. 8이면 약 8타일")]
+    public float dashDistance = 8f;
+
+    [Tooltip("대시 이동 시간")]
+    public float dashDuration = 0.25f;
+
+    [Tooltip("대시 전 경고 시간")]
+    public float dashWarningTime = 0.8f;
+
+    [Tooltip("2번째 대시까지 대기 시간")]
+    public float dashBetweenDelay = 0.3f;
+
+
+    [Header("AOE")]
+
+    [Tooltip("AOE 지속 시간")]
+    public float dashAOEDuration = 3f;
+
+    [Tooltip("대시 경로 AOE 폭")]
+    public float dashAOEWidth = 1.5f;
+
+    [Tooltip("1페이즈 AOE 데미지")]
+    public float phase1AOEDamage = 25f;
+
+    [Tooltip("2페이즈 AOE 데미지")]
+    public float phase2AOEDamage = 35f;
+
+
+    // =========================================================
+    // 대시 연출
+    // =========================================================
+
+    [Header("========== 대시 연출 ==========")]
+
+    public float chargeScale = 0.85f;
+    public float dashScale = 1.15f;
+
+    private Vector3 originalScale;
+
+
+    // =========================================================
+    // 삼각형 보스 방향
+    // =========================================================
+
+    [Header("========== 보스 방향 ==========")]
+
+    [Tooltip("활성화하면 보스의 한 꼭짓점이 플레이어를 바라봄")]
+    public bool facePlayer = true;
+
+    [Tooltip("삼각형 Sprite의 꼭짓점 방향에 맞춰 조절")]
+    public float triangleRotationOffset = -90f;
+
+
+    // =========================================================
+    // 기타
+    // =========================================================
+
+    private Coroutine patternCoroutine;
+
+
+    // =========================================================
+    // Start
+    // =========================================================
+
+    private void Start()
     {
-        GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (p != null) player = p.transform;
+        originalScale = transform.localScale;
 
-        entityHealth = GetComponent<EntityHealth>();
-        rb = GetComponent<Rigidbody2D>();
-
-        if (firePoint == null) firePoint = transform;
-
-        StartCoroutine(BossPatternRoutine());
-    }
-
-    void Update()
-    {
-        // 체력이 30% 이하가 되면 분노 모드(2페이즈) 돌입
-        if (!isRageMode && entityHealth != null)
+        // 플레이어 찾기
+        if (player == null)
         {
-            if (entityHealth.currentHealth <= entityHealth.maxHealth * 0.3f)
+            GameObject playerObject =
+                GameObject.FindGameObjectWithTag("Player");
+
+            if (playerObject != null)
             {
-                isRageMode = true;
-                Debug.Log("<color=red>🔥 보스 분노 모드(2페이즈) 돌입! 패턴 간격 3초로 단축</color>");
+                player = playerObject.transform;
+            }
+            else
+            {
+                Debug.LogError(
+                    "[EnemyBoss] Player 태그를 가진 오브젝트를 찾지 못했습니다."
+                );
             }
         }
+
+        // 체력
+        if (entityHealth == null)
+        {
+            entityHealth =
+                GetComponent<EntityHealth>();
+        }
+
+        // Rigidbody
+        if (rb == null)
+        {
+            rb =
+                GetComponent<Rigidbody2D>();
+        }
+
+        // 필수 오브젝트 검사
+        if (projectilePrefab == null)
+        {
+            Debug.LogError(
+                "[EnemyBoss] projectilePrefab이 연결되지 않았습니다."
+            );
+        }
+
+        if (warningAOEPrefab == null)
+        {
+            Debug.LogError(
+                "[EnemyBoss] warningAOEPrefab이 연결되지 않았습니다."
+            );
+        }
+
+        if (ObjectPooler.Instance == null)
+        {
+            Debug.LogError(
+                "[EnemyBoss] ObjectPooler가 씬에 없습니다."
+            );
+        }
+
+        // 패턴 시작
+        patternCoroutine =
+            StartCoroutine(BossPatternRoutine());
     }
+
+
+    // =========================================================
+    // Update
+    // =========================================================
+
+    private void Update()
+    {
+        CheckPhase();
+
+        if (facePlayer)
+        {
+            RotateTowardPlayer();
+        }
+    }
+
+
+    // =========================================================
+    // 페이즈 확인
+    // =========================================================
+
+    private void CheckPhase()
+    {
+        if (entityHealth == null)
+            return;
+
+        float phase2Health =
+            entityHealth.maxHealth *
+            phase2HealthPercent;
+
+        if (!isPhase2 &&
+            entityHealth.currentHealth <= phase2Health)
+        {
+            isPhase2 = true;
+
+            Debug.Log(
+                "=============================="
+            );
+
+            Debug.Log(
+                "보스 2페이즈 진입!"
+            );
+
+            Debug.Log(
+                "=============================="
+            );
+        }
+    }
+
+
+    // =========================================================
+    // 보스가 플레이어를 바라보기
+    // =========================================================
+
+    private void RotateTowardPlayer()
+    {
+        if (player == null)
+            return;
+
+        Vector2 direction =
+            player.position -
+            transform.position;
+
+        if (direction.sqrMagnitude < 0.001f)
+            return;
+
+        float angle =
+            Mathf.Atan2(
+                direction.y,
+                direction.x
+            ) * Mathf.Rad2Deg;
+
+        transform.rotation =
+            Quaternion.Euler(
+                0f,
+                0f,
+                angle + triangleRotationOffset
+            );
+    }
+
+
+    // =========================================================
+    // 전체 패턴 루틴
+    // =========================================================
 
     private IEnumerator BossPatternRoutine()
     {
+        // 보스 등장 후 첫 패턴까지 대기
         yield return new WaitForSeconds(2f);
 
-        while (entityHealth != null && entityHealth.currentHealth > 0)
+        while (true)
         {
-            float currentInterval = isRageMode ? ragePatternInterval : normalPatternInterval;
-            yield return new WaitForSeconds(currentInterval);
+            // 패턴 선택
+            int patternIndex =
+                Random.Range(0, 3);
 
-            // 0, 1, 2 패턴 중 무작위 선택
-            int pattern = Random.Range(0, 3);
+            switch (patternIndex)
+            {
+                case 0:
 
-            if (pattern == 0)
-            {
-                yield return StartCoroutine(Pattern1_ShootArrowsAtPlayer());
+                    yield return StartCoroutine(
+                        Pattern1_ShootArrowsAtPlayer()
+                    );
+
+                    break;
+
+
+                case 1:
+
+                    yield return StartCoroutine(
+                        Pattern2_ClockwiseSectorShoot()
+                    );
+
+                    break;
+
+
+                case 2:
+
+                    yield return StartCoroutine(
+                        Pattern3_DashAndAOE()
+                    );
+
+                    break;
             }
-            else if (pattern == 1)
-            {
-                yield return StartCoroutine(Pattern2_ClockwiseSectorShoot());
-            }
-            else
-            {
-                yield return StartCoroutine(Pattern3_DashAndAOE());
-            }
+
+            // 패턴이 끝난 후 대기
+            float patternInterval =
+                isPhase2
+                ? phase2PatternInterval
+                : phase1PatternInterval;
+
+            yield return new WaitForSeconds(
+                patternInterval
+            );
         }
     }
 
-    // -------------------------------------------------------------------------
-    // [패턴 1] 플레이어 방향으로 화살 연사 (1페이즈: 5발 / 2페이즈: 7발)
-    // -------------------------------------------------------------------------
+
+    // =========================================================
+    // 패턴 1
+    //
+    // 플레이어를 향해
+    // 정해진 횟수만큼 연속 발사
+    // =========================================================
+
     private IEnumerator Pattern1_ShootArrowsAtPlayer()
     {
-        int count = isRageMode ? 7 : 5;
-        float interval = isRageMode ? 0.3f : 0.5f;
-        float damage = isRageMode ? rageProjDamage : normalProjDamage;
+        if (player == null)
+            yield break;
 
-        if (ObjectPooler.Instance == null)
+        int bulletCount;
+        float fireInterval;
+        float bulletSpeed;
+
+        if (ObjectPooler.Instance == null || projectilePrefab == null)
         {
-            Debug.LogError("[EnemyBoss] ObjectPooler.Instance가 없습니다.");
+            Debug.LogError("[EnemyBoss] ObjectPooler 인스턴스 또는 projectilePrefab이 비어 있습니다!");
             yield break;
         }
 
-        if (projectilePrefab == null)
+        // -----------------------------------------
+        // 페이즈별 설정
+        // -----------------------------------------
+
+        if (isPhase2)
         {
-            Debug.LogError("[EnemyBoss] projectilePrefab이 지정되지 않았습니다.");
-            yield break;
+            bulletCount =
+                phase2Pattern1BulletCount;
+
+            fireInterval =
+                phase2Pattern1FireInterval;
+
+            bulletSpeed =
+                phase2Pattern1BulletSpeed;
+        }
+        else
+        {
+            bulletCount =
+                phase1Pattern1BulletCount;
+
+            fireInterval =
+                phase1Pattern1FireInterval;
+
+            bulletSpeed =
+                phase1Pattern1BulletSpeed;
         }
 
-        for (int i = 0; i < count; i++)
+        bulletCount =
+            Mathf.Max(0, bulletCount);
+
+
+        // -----------------------------------------
+        // 발사
+        // -----------------------------------------
+
+        for (int i = 0;
+             i < bulletCount;
+             i++)
         {
             if (player == null)
-            {
-                Debug.LogError("[EnemyBoss] Player를 찾을 수 없습니다.");
                 yield break;
-            }
 
-            Vector3 spawnPos = firePoint != null
-                ? firePoint.position
-                : transform.position;
+            Vector2 spawnPosition;
 
-            Vector2 dir = (player.position - spawnPos).normalized;
-
-            // 원형 투사체이므로 -90도 보정 없음
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-            Quaternion rot = Quaternion.Euler(0, 0, angle);
-
-            GameObject proj = ObjectPooler.Instance.SpawnFromPool(
-                "Enemy",
-                projectilePrefab,
-                spawnPos,
-                rot
-            );
-
-            if (proj == null)
+            if (firePoint != null)
             {
-                Debug.LogError("[EnemyBoss] 투사체 생성 실패");
-                yield break;
-            }
-
-            Projectile projScript = proj.GetComponent<Projectile>();
-
-            if (projScript == null)
-            {
-                Debug.LogError("[EnemyBoss] 생성된 투사체에 Projectile 컴포넌트가 없습니다.");
-                yield break;
-            }
-
-            projScript.Setup(
-                damage,
-                0,
-                "Player",
-                "Enemy"
-            );
-
-            if (isRageMode)
-            {
-                projScript.speed *= rageProjSpeedMultiplier;
-            }
-
-            yield return new WaitForSeconds(interval);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // [패턴 2] 보스의 정중앙(firePoint)에서 +모양으로 시작해 시계방향으로 90도 회전하며 발사
-    // -------------------------------------------------------------------------
-    private IEnumerator Pattern2_ClockwiseSectorShoot()
-    {
-        float interval = isRageMode ? 0.2f : 0.25f;
-        float damage = isRageMode ? rageProjDamage : normalProjDamage;
-
-        if (ObjectPooler.Instance == null)
-        {
-            Debug.LogError("[EnemyBoss] ObjectPooler.Instance가 없습니다.");
-            yield break;
-        }
-
-        if (projectilePrefab == null)
-        {
-            Debug.LogError("[EnemyBoss] projectilePrefab이 지정되지 않았습니다.");
-            yield break;
-        }
-
-        float baseStartAngle = Random.Range(0, 4) * 90f;
-
-        int totalSteps = 5;
-
-        for (int i = 0; i < totalSteps; i++)
-        {
-            Vector3 spawnPos = firePoint != null
-                ? firePoint.position
-                : transform.position;
-
-            float currentAngle =
-                baseStartAngle - (i * (90f / (totalSteps - 1)));
-
-            for (int arm = 0; arm < 4; arm++)
-            {
-                float armAngle = currentAngle + (arm * 90f);
-
-                Quaternion rot =
-                    Quaternion.Euler(0, 0, armAngle);
-
-                GameObject proj = ObjectPooler.Instance.SpawnFromPool(
-                    "Enemy",
-                    projectilePrefab,
-                    spawnPos,
-                    rot
-                );
-
-                if (proj == null)
-                {
-                    Debug.LogError("[EnemyBoss] 패턴2 투사체 생성 실패");
-                    continue;
-                }
-
-                Projectile projScript = proj.GetComponent<Projectile>();
-
-                if (projScript == null)
-                {
-                    Debug.LogError(
-                        "[EnemyBoss] 투사체에 Projectile 컴포넌트가 없습니다."
-                    );
-                    continue;
-                }
-
-                projScript.Setup(
-                    damage,
-                    0,
-                    "Player",
-                    "Enemy"
-                );
-
-                if (isRageMode)
-                {
-                    projScript.speed *= rageProjSpeedMultiplier;
-                }
-            }
-
-            yield return new WaitForSeconds(interval);
-        }
-    }
-
-// -------------------------------------------------------------------------
-// [패턴 3] 플레이어 방향 돌진
-// 1페이즈 : 1회 돌진
-// 2페이즈 : 2회 연속 돌진
-//
-// 돌진 전 : 빨간색 경고 영역 표시
-// 돌진 후 : 해당 위치에 빨간 장판 생성
-// 장판 : 3초 동안 유지
-// -------------------------------------------------------------------------
-    private IEnumerator Pattern3_DashAndAOE()
-    {
-        int dashCount = isRageMode ? 2 : 1;
-
-        float aoeDamage = isRageMode
-            ? rageAoeDamage
-            : normalAoeDamage;
-
-        // ObjectPooler 확인
-        if (ObjectPooler.Instance == null)
-        {
-            Debug.LogError("[Boss] ObjectPooler.Instance가 없습니다.");
-            yield break;
-        }
-
-        // AOE 프리팹 확인
-        if (warningAOEPrefab == null)
-        {
-            Debug.LogError("[Boss] warningAOEPrefab이 지정되지 않았습니다.");
-            yield break;
-        }
-
-        for (int d = 0; d < dashCount; d++)
-        {
-            if (player == null)
-            {
-                Debug.LogError("[Boss] Player를 찾을 수 없습니다.");
-                yield break;
-            }
-
-            // ---------------------------------------------------------
-            // 1. 현재 플레이어 위치를 목표 위치로 저장
-            // ---------------------------------------------------------
-            Vector3 targetPos = player.position;
-
-            // ---------------------------------------------------------
-            // 2. 돌진 전 빨간색 경고 영역 생성
-            // ---------------------------------------------------------
-            GameObject warningAOE =
-                ObjectPooler.Instance.SpawnFromPool(
-                    "BossAOE",
-                    warningAOEPrefab,
-                    targetPos,
-                    Quaternion.identity
-                );
-
-            if (warningAOE == null)
-            {
-                Debug.LogError("[Boss] 경고 AOE 생성 실패");
-                yield break;
-            }
-
-            // 경고 시간
-            yield return new WaitForSeconds(0.8f);
-
-            // ---------------------------------------------------------
-            // 3. 경고 영역 제거
-            // ---------------------------------------------------------
-            ObjectPooler.Instance.ReturnToPool(
-                "BossAOE",
-                warningAOE
-            );
-
-            // ---------------------------------------------------------
-            // 4. 플레이어 방향으로 돌진
-            // ---------------------------------------------------------
-            if (rb != null)
-            {
-                Vector2 dashDir =
-                    (targetPos - transform.position).normalized;
-
-                float dashSpeed = isRageMode ? 26f : 22f;
-                float dashDuration = isRageMode ? 0.15f : 0.15f;
-
-                float elapsed = 0f;
-
-                while (elapsed < dashDuration)
-                {
-                    rb.MovePosition(
-                        rb.position +
-                        dashDir *
-                        dashSpeed *
-                        Time.fixedDeltaTime
-                    );
-
-                    elapsed += Time.fixedDeltaTime;
-
-                    yield return new WaitForFixedUpdate();
-                }
+                spawnPosition =
+                    firePoint.position;
             }
             else
             {
-                // Rigidbody2D가 없다면 목표 위치로 순간 이동
-                transform.position = targetPos;
+                spawnPosition =
+                    transform.position;
             }
 
-            // ---------------------------------------------------------
-            // 5. 돌진이 끝난 위치에 장판 생성
-            // ---------------------------------------------------------
-            GameObject floorAOE =
+
+            // 플레이어 방향
+            Vector2 direction =
+                (
+                    (Vector2)player.position -
+                    spawnPosition
+                ).normalized;
+
+
+            if (direction.sqrMagnitude < 0.001f)
+            {
+                direction =
+                    Vector2.right;
+            }
+
+
+            // 탄환 회전
+            float angle =
+                Mathf.Atan2(
+                    direction.y,
+                    direction.x
+                ) * Mathf.Rad2Deg;
+
+
+            // 풀에서 탄환 가져오기
+            GameObject projectile =
+                ObjectPooler.Instance.SpawnFromPool(
+                    "Enemy",
+                    projectilePrefab,
+                    spawnPosition,
+                    Quaternion.Euler(
+                        0f,
+                        0f,
+                        angle
+                    )
+                );
+
+
+            if (projectile != null)
+            {
+                Projectile projectileScript =
+                    projectile.GetComponent<Projectile>();
+
+                if (projectileScript != null)
+                {
+                    projectileScript.Setup(
+                        10f,
+                        0,
+                        "Player",
+                        "Enemy"
+                    );
+
+                    // Inspector에서 설정한 탄속
+                    projectileScript.speed =
+                        bulletSpeed;
+                }
+            }
+
+
+            // 다음 발사까지 대기
+            yield return new WaitForSeconds(
+                fireInterval
+            );
+        }
+    }
+
+
+    // =========================================================
+    // 패턴 2
+    //
+    // 상 / 하 / 좌 / 우 4방향에서 시작
+    //
+    // 한 번에 4발 발사
+    // ↓
+    // 22.5도 시계방향 회전
+    // ↓
+    // 다시 4발 발사
+    // ↓
+    // ...
+    //
+    // 총 90도 회전하면 종료
+    // =========================================================
+
+    private IEnumerator Pattern2_ClockwiseSectorShoot()
+    {
+        int bulletCount;
+        float fireInterval;
+        float bulletSpeed;
+
+        if (ObjectPooler.Instance == null || projectilePrefab == null)
+        {
+            Debug.LogError("[EnemyBoss] ObjectPooler 인스턴스 또는 projectilePrefab이 비어 있습니다!");
+            yield break;
+        }
+
+        // -----------------------------------------
+        // 페이즈별 설정
+        // -----------------------------------------
+
+        if (isPhase2)
+        {
+            bulletCount =
+                phase2Pattern2BulletCount;
+
+            fireInterval =
+                phase2Pattern2FireInterval;
+
+            bulletSpeed =
+                phase2Pattern2BulletSpeed;
+        }
+        else
+        {
+            bulletCount =
+                phase1Pattern2BulletCount;
+
+            fireInterval =
+                phase1Pattern2FireInterval;
+
+            bulletSpeed =
+                phase1Pattern2BulletSpeed;
+        }
+
+
+        bulletCount =
+            Mathf.Max(1, bulletCount);
+
+
+        // -----------------------------------------
+        // 시작 방향
+        //
+        // 0 / 90 / 180 / 270
+        //
+        // 즉 상하좌우 중 하나에서 시작
+        // -----------------------------------------
+
+        float baseAngle =
+            Random.Range(0, 4) * 90f;
+
+
+        // -----------------------------------------
+        // 총 몇 번 발사할지 계산
+        //
+        // 예:
+        // 총 회전 90도
+        // 1회당 22.5도
+        //
+        // 0
+        // 22.5
+        // 45
+        // 67.5
+        // 90
+        //
+        // = 총 5회
+        // -----------------------------------------
+
+        int shotCount =
+            Mathf.FloorToInt(
+                pattern2TotalRotation /
+                pattern2RotationPerShot
+            ) + 1;
+
+
+        // Inspector에서 설정한 탄환 개수와
+        // 실제 회전 횟수를 혼동하지 않도록
+        // 최소 1회 보장
+        shotCount =
+            Mathf.Max(1, shotCount);
+
+
+        // -----------------------------------------
+        // 회전하면서 발사
+        // -----------------------------------------
+
+        for (int shot = 0;
+             shot < shotCount;
+             shot++)
+        {
+            // 시계방향 회전
+            float currentAngle =
+                baseAngle -
+                shot * pattern2RotationPerShot;
+
+
+            // -------------------------------------
+            // 4방향 발사
+            //
+            // 현재 방향
+            // +90
+            // +180
+            // +270
+            // -------------------------------------
+
+            for (int directionIndex = 0;
+                 directionIndex < bulletCount;
+                 directionIndex++)
+            {
+                float bulletAngle =
+                    currentAngle +
+                    directionIndex * 90f;
+
+
+                Vector2 direction =
+                    new Vector2(
+                        Mathf.Cos(
+                            bulletAngle *
+                            Mathf.Deg2Rad
+                        ),
+
+                        Mathf.Sin(
+                            bulletAngle *
+                            Mathf.Deg2Rad
+                        )
+                    ).normalized;
+
+
+                Vector2 spawnPosition;
+
+                if (firePoint != null)
+                {
+                    spawnPosition =
+                        firePoint.position;
+                }
+                else
+                {
+                    spawnPosition =
+                        transform.position;
+                }
+
+
+                // ---------------------------------
+                // 탄환 생성
+                // ---------------------------------
+
+                GameObject projectile =
+                    ObjectPooler.Instance.SpawnFromPool(
+                        "Enemy",
+                        projectilePrefab,
+                        spawnPosition,
+                        Quaternion.Euler(
+                            0f,
+                            0f,
+                            bulletAngle
+                        )
+                    );
+
+
+                if (projectile != null)
+                {
+                    Projectile projectileScript =
+                        projectile.GetComponent<Projectile>();
+
+                    if (projectileScript != null)
+                    {
+                        projectileScript.Setup(
+                            10f,
+                            0,
+                            "Player",
+                            "Enemy"
+                        );
+
+                        projectileScript.speed =
+                            bulletSpeed;
+                    }
+                }
+            }
+
+
+            // -------------------------------------
+            // 다음 회전까지 대기
+            // -------------------------------------
+
+            if (shot < shotCount - 1)
+            {
+                yield return new WaitForSeconds(
+                    fireInterval
+                );
+            }
+        }
+    }
+
+
+    // =========================================================
+    // 패턴 3
+    //
+    // 1페이즈 = 1회 대시
+    // 2페이즈 = 2회 대시
+    // =========================================================
+
+    private IEnumerator Pattern3_DashAndAOE()
+    {
+        if (player == null)
+            yield break;
+
+
+        int dashCount =
+            isPhase2 ? 2 : 1;
+
+
+        float aoeDamage =
+            isPhase2
+            ? phase2AOEDamage
+            : phase1AOEDamage;
+
+
+        for (int dashIndex = 0;
+             dashIndex < dashCount;
+             dashIndex++)
+        {
+            // -------------------------------------
+            // 시작 위치
+            // -------------------------------------
+
+            Vector2 startPosition;
+
+            if (rb != null)
+            {
+                startPosition =
+                    rb.position;
+            }
+            else
+            {
+                startPosition =
+                    transform.position;
+            }
+
+
+            // -------------------------------------
+            // 플레이어 방향
+            // -------------------------------------
+
+            Vector2 direction =
+                (
+                    (Vector2)player.position -
+                    startPosition
+                ).normalized;
+
+
+            if (direction.sqrMagnitude < 0.001f)
+            {
+                direction =
+                    Vector2.right;
+            }
+
+
+            // -------------------------------------
+            // 플레이어까지 가지 않고
+            // 지정한 거리만큼만 대시
+            // -------------------------------------
+
+            Vector2 dashTarget =
+                startPosition +
+                direction * dashDistance;
+
+
+            // -------------------------------------
+            // AOE 중심
+            // -------------------------------------
+
+            Vector2 aoeCenter =
+                startPosition +
+                direction *
+                (dashDistance * 0.5f);
+
+
+            // -------------------------------------
+            // AOE 생성
+            // -------------------------------------
+
+            GameObject aoeObject =
                 ObjectPooler.Instance.SpawnFromPool(
                     "BossAOE",
                     warningAOEPrefab,
-                    transform.position,
+                    aoeCenter,
                     Quaternion.identity
                 );
 
-            if (floorAOE == null)
+
+            BossAOE aoe = null;
+
+
+            if (aoeObject != null)
             {
-                Debug.LogError("[Boss] 장판 AOE 생성 실패");
-                yield break;
+                aoe =
+                    aoeObject.GetComponent<BossAOE>();
+
+
+                if (aoe != null)
+                {
+                    float aoeAngle =
+                        Mathf.Atan2(
+                            direction.y,
+                            direction.x
+                        ) * Mathf.Rad2Deg;
+
+
+                    aoeObject.transform.rotation =
+                        Quaternion.Euler(
+                            0f,
+                            0f,
+                            aoeAngle
+                        );
+
+
+                    // 긴 방향 = 대시 거리
+                    // 짧은 방향 = AOE 폭
+                    aoeObject.transform.localScale =
+                        new Vector3(
+                            dashDistance,
+                            dashAOEWidth,
+                            1f
+                        );
+
+
+                    // 반투명 경고
+                    aoe.SetWarningState();
+                }
             }
 
-            // ---------------------------------------------------------
-            // 6. 장판 3초 유지
-            //
-            // 장판 오브젝트가 자체적으로 데미지를 처리한다면
-            // 여기서는 3초 후 반환만 하면 됩니다.
-            // ---------------------------------------------------------
-            StartCoroutine(
-                ReturnAOEAfterDelay(
-                    floorAOE,
-                    3f
+
+            // -------------------------------------
+            // 대시 준비 연출
+            // -------------------------------------
+
+            transform.DOKill();
+
+
+            Sequence chargeSequence =
+                DOTween.Sequence();
+
+
+            chargeSequence.Append(
+                transform.DOScale(
+                    originalScale *
+                    chargeScale,
+
+                    dashWarningTime *
+                    0.5f
                 )
             );
 
-            // ---------------------------------------------------------
-            // 7. 2페이즈라면 두 번째 돌진 준비
-            // ---------------------------------------------------------
-            if (isRageMode && d < dashCount - 1)
+
+            chargeSequence.Append(
+                transform.DOScale(
+                    originalScale *
+                    dashScale,
+
+                    dashWarningTime *
+                    0.2f
+                )
+            );
+
+
+            chargeSequence.Append(
+                transform.DOScale(
+                    originalScale,
+
+                    dashWarningTime *
+                    0.3f
+                )
+            );
+
+
+            yield return
+                chargeSequence
+                .WaitForCompletion();
+
+
+            // -------------------------------------
+            // 대시
+            // -------------------------------------
+
+            if (rb != null)
             {
-                // 첫 번째 돌진 후 잠깐 대기
-                yield return new WaitForSeconds(0.3f);
+                rb.bodyType =
+                    RigidbodyType2D.Kinematic;
+            }
+
+
+            transform.DOMove(
+                dashTarget,
+                dashDuration
+            )
+            .SetEase(
+                Ease.InQuad
+            );
+
+
+            yield return new WaitForSeconds(
+                dashDuration
+            );
+
+
+            // -------------------------------------
+            // AOE 활성화
+            // -------------------------------------
+
+            if (aoe != null)
+            {
+                aoe.Activate(
+                    aoeDamage,
+                    dashAOEDuration
+                );
+            }
+
+
+            // -------------------------------------
+            // 2페이즈 두 번째 대시
+            // -------------------------------------
+
+            if (dashIndex <
+                dashCount - 1)
+            {
+                yield return
+                    new WaitForSeconds(
+                        dashBetweenDelay
+                    );
             }
         }
     }
 
 
-    // -------------------------------------------------------------------------
-    // AOE를 일정 시간 후 ObjectPool로 반환
-    // -------------------------------------------------------------------------
-    private IEnumerator ReturnAOEAfterDelay(
-        GameObject aoe,
-        float duration)
-    {
-        yield return new WaitForSeconds(duration);
+    // =========================================================
+    // 비활성화
+    // =========================================================
 
-        if (aoe != null && ObjectPooler.Instance != null)
+    private void OnDisable()
+    {
+        transform.DOKill();
+
+        transform.localScale =
+            originalScale;
+        // 보스 사망 시 처리
+        if (GameOverPanelUI.Instance != null)
         {
-            ObjectPooler.Instance.ReturnToPool(
-                "BossAOE",
-                aoe
-            );
+            GameOverPanelUI.Instance.ShowEndPanel("VICTORY!");
         }
     }
 }

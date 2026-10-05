@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d22a04fec14dddc4c8b932ffc827146c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpearWeapon
-  weaponName: 
+  weaponName: Spear
   rarity: 0
   baseDamage: 20
   attackCooldown: 1
